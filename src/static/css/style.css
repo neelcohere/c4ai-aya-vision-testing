@@ -198,7 +198,76 @@ label {
     padding: 15px;
     border-radius: 5px;
     border-left: 4px solid #ea4335;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.approval-instruction {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.approval-actions {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0 20px 0;
+}
+
+.edit-button {
+    background-color: #4285f4;
+}
+
+.approve-button {
+    background-color: #34a853;
+}
+
+.cancel-button {
+    background-color: #ea4335;
+}
+
+.save-button {
+    background-color: #34a853;
+}
+
+.approved-tag {
+    display: inline-block;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.full-width {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.description-item {
+    position: relative;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #4285f4;
+    margin-bottom: 15px;
+}
+
+.description-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.description-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 #ticket-container {

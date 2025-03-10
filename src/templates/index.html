@@ -35,12 +35,34 @@
             
             <div id="descriptions-container" class="hidden">
                 <h2>Image Descriptions:</h2>
+                <p class="approval-instruction">Please review and approve each description before proceeding.</p>
                 <div id="descriptions-list"></div>
             </div>
             
             <div id="summary-container" class="hidden">
                 <h2>Issue Summary:</h2>
+                <p class="approval-instruction">Please review and approve the issue summary before proceeding.</p>
                 <div id="summary-text"></div>
+                <div class="approval-actions">
+                    <button id="edit-summary-button" class="action-button edit-button">Edit Summary</button>
+                    <button id="approve-summary-button" class="action-button approve-button">Approve Summary</button>
+                </div>
+            </div>
+            
+            <div id="summary-edit-container" class="hidden">
+                <h2>Edit Issue Summary:</h2>
+                <div class="form-group">
+                    <label for="summary-title-edit">Title:</label>
+                    <input type="text" id="summary-title-edit" class="full-width">
+                </div>
+                <div class="form-group">
+                    <label for="summary-description-edit">Description:</label>
+                    <textarea id="summary-description-edit" class="full-width" rows="6"></textarea>
+                </div>
+                <div class="approval-actions">
+                    <button id="cancel-summary-edit-button" class="action-button cancel-button">Cancel</button>
+                    <button id="save-summary-edit-button" class="action-button save-button">Save Changes</button>
+                </div>
             </div>
         </div>
         

@@ -16,6 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loading');
     const ticketContainer = document.getElementById('ticket-container');
     const ticketForm = document.getElementById('ticket-form');
+    const summaryEditContainer = document.getElementById('summary-edit-container');
+    const summaryTitleEdit = document.getElementById('summary-title-edit');
+    const summaryDescriptionEdit = document.getElementById('summary-description-edit');
+    const editSummaryButton = document.getElementById('edit-summary-button');
+    const approveSummaryButton = document.getElementById('approve-summary-button');
+    const cancelSummaryEditButton = document.getElementById('cancel-summary-edit-button');
+    const saveSummaryEditButton = document.getElementById('save-summary-edit-button');
+    
+    // Track approval status
+    let allDescriptionsApproved = false;
+    let summaryApproved = false;
     
     let selectedFiles = [];
     
@@ -207,20 +218,101 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.descriptions && data.descriptions.length > 0) {
                 descriptionsContainer.classList.remove('hidden');
                 
-                data.descriptions.forEach(item => {
+                data.descriptions.forEach((item, index) => {
                     const descItem = document.createElement('div');
                     descItem.className = 'description-item';
+                    descItem.dataset.index = index;
+                    
+                    // Create header with filename
+                    const itemHeader = document.createElement('div');
+                    itemHeader.className = 'description-item-header';
                     
                     const fileName = document.createElement('h3');
                     fileName.textContent = item.filename;
                     
-                    const descText = document.createElement('p');
-                    descText.textContent = item.description;
+                    // Add approval status
+                    const approvalStatus = document.createElement('span');
+                    approvalStatus.className = 'approved-tag hidden';
+                    approvalStatus.textContent = 'Approved';
+                    approvalStatus.id = `approved-tag-${index}`;
                     
-                    descItem.appendChild(fileName);
-                    descItem.appendChild(descText);
+                    itemHeader.appendChild(fileName);
+                    itemHeader.appendChild(approvalStatus);
+                    
+                    // Create content for viewing
+                    const descTextContainer = document.createElement('div');
+                    descTextContainer.className = 'description-text-container';
+                    descTextContainer.id = `desc-text-container-${index}`;
+                    
+                    const descText = document.createElement('p');
+                    descText.className = 'description-text';
+                    descText.textContent = item.description;
+                    descText.dataset.originalText = item.description;
+                    
+                    descTextContainer.appendChild(descText);
+                    
+                    // Create edit interface (hidden initially)
+                    const editContainer = document.createElement('div');
+                    editContainer.className = 'description-edit-container hidden';
+                    editContainer.id = `desc-edit-container-${index}`;
+                    
+                    const editTextarea = document.createElement('textarea');
+                    editTextarea.className = 'full-width';
+                    editTextarea.rows = 5;
+                    editTextarea.id = `desc-edit-${index}`;
+                    editTextarea.value = item.description;
+                    
+                    editContainer.appendChild(editTextarea);
+                    
+                    // Create action buttons
+                    const actionButtons = document.createElement('div');
+                    actionButtons.className = 'description-actions';
+                    
+                    const editButton = document.createElement('button');
+                    editButton.className = 'action-button edit-button';
+                    editButton.textContent = 'Edit';
+                    editButton.id = `edit-desc-${index}`;
+                    
+                    const approveButton = document.createElement('button');
+                    approveButton.className = 'action-button approve-button';
+                    approveButton.textContent = 'Approve';
+                    approveButton.id = `approve-desc-${index}`;
+                    
+                    actionButtons.appendChild(editButton);
+                    actionButtons.appendChild(approveButton);
+                    
+                    // Edit mode buttons (hidden initially)
+                    const editModeButtons = document.createElement('div');
+                    editModeButtons.className = 'description-actions hidden';
+                    editModeButtons.id = `edit-mode-buttons-${index}`;
+                    
+                    const cancelButton = document.createElement('button');
+                    cancelButton.className = 'action-button cancel-button';
+                    cancelButton.textContent = 'Cancel';
+                    cancelButton.id = `cancel-edit-${index}`;
+                    
+                    const saveButton = document.createElement('button');
+                    saveButton.className = 'action-button save-button';
+                    saveButton.textContent = 'Save';
+                    saveButton.id = `save-edit-${index}`;
+                    
+                    editModeButtons.appendChild(cancelButton);
+                    editModeButtons.appendChild(saveButton);
+                    
+                    // Append all elements
+                    descItem.appendChild(itemHeader);
+                    descItem.appendChild(descTextContainer);
+                    descItem.appendChild(editContainer);
+                    descItem.appendChild(actionButtons);
+                    descItem.appendChild(editModeButtons);
                     descriptionsList.appendChild(descItem);
+                    
+                    // Set up event listeners for this description item
+                    setupDescriptionItemListeners(index);
                 });
+                
+                // Check if all descriptions are approved to update UI
+                checkAllDescriptionsApproved();
             }
             
             // Display summary if available
@@ -239,12 +331,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 summaryText.appendChild(titleElement);
                 summaryText.appendChild(descriptionElement);
                 
-                // Store summary data for ticket submission
+                // Store summary data for ticket submission and editing
                 summaryText.dataset.title = data.summary.title;
                 summaryText.dataset.description = data.summary.description;
                 
-                // Show ticket form
-                ticketContainer.classList.remove('hidden');
+                // Populate edit form with current values
+                summaryTitleEdit.value = data.summary.title;
+                summaryDescriptionEdit.value = data.summary.description;
+                
+                // Hide ticket form until approved
+                ticketContainer.classList.add('hidden');
+                summaryApproved = false;
             }
         })
         .catch(error => {
@@ -253,9 +350,156 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
+    // Helper function to set up description item listeners
+    function setupDescriptionItemListeners(index) {
+        // Edit button opens the edit interface
+        document.getElementById(`edit-desc-${index}`).addEventListener('click', () => {
+            document.getElementById(`desc-text-container-${index}`).classList.add('hidden');
+            document.getElementById(`desc-edit-container-${index}`).classList.remove('hidden');
+            document.getElementById(`edit-mode-buttons-${index}`).classList.remove('hidden');
+            document.querySelector(`[data-index="${index}"] .description-actions`).classList.add('hidden');
+            
+            // Update the textarea with current content
+            const currentText = document.querySelector(`[data-index="${index}"] .description-text`).textContent;
+            document.getElementById(`desc-edit-${index}`).value = currentText;
+        });
+        
+        // Approve button marks the description as approved
+        document.getElementById(`approve-desc-${index}`).addEventListener('click', () => {
+            document.getElementById(`approved-tag-${index}`).classList.remove('hidden');
+            document.getElementById(`edit-desc-${index}`).disabled = true;
+            document.getElementById(`approve-desc-${index}`).disabled = true;
+            
+            // Mark as approved and check overall approval status
+            document.querySelector(`[data-index="${index}"]`).dataset.approved = 'true';
+            checkAllDescriptionsApproved();
+        });
+        
+        // Cancel button returns to view mode without saving changes
+        document.getElementById(`cancel-edit-${index}`).addEventListener('click', () => {
+            document.getElementById(`desc-text-container-${index}`).classList.remove('hidden');
+            document.getElementById(`desc-edit-container-${index}`).classList.add('hidden');
+            document.getElementById(`edit-mode-buttons-${index}`).classList.add('hidden');
+            document.querySelector(`[data-index="${index}"] .description-actions`).classList.remove('hidden');
+        });
+        
+        // Save button saves changes and returns to view mode
+        document.getElementById(`save-edit-${index}`).addEventListener('click', () => {
+            const newText = document.getElementById(`desc-edit-${index}`).value;
+            document.querySelector(`[data-index="${index}"] .description-text`).textContent = newText;
+            
+            // Return to view mode
+            document.getElementById(`desc-text-container-${index}`).classList.remove('hidden');
+            document.getElementById(`desc-edit-container-${index}`).classList.add('hidden');
+            document.getElementById(`edit-mode-buttons-${index}`).classList.add('hidden');
+            document.querySelector(`[data-index="${index}"] .description-actions`).classList.remove('hidden');
+        });
+    }
+    
+    // Helper function to check if all descriptions are approved
+    function checkAllDescriptionsApproved() {
+        const descItems = document.querySelectorAll('.description-item');
+        allDescriptionsApproved = Array.from(descItems).every(item => item.dataset.approved === 'true');
+        
+        // If all approved and summary is also approved, show the ticket form
+        updateTicketFormVisibility();
+    }
+    
+    // Helper function to update ticket form visibility based on approval status
+    function updateTicketFormVisibility() {
+        if (allDescriptionsApproved && summaryApproved) {
+            ticketContainer.classList.remove('hidden');
+        } else {
+            ticketContainer.classList.add('hidden');
+        }
+    }
+    
+    // Summary Edit button
+    editSummaryButton.addEventListener('click', () => {
+        summaryContainer.classList.add('hidden');
+        summaryEditContainer.classList.remove('hidden');
+    });
+    
+    // Summary Approve button
+    approveSummaryButton.addEventListener('click', () => {
+        summaryApproved = true;
+        
+        // Add approved tag to summary
+        const approvedTag = document.createElement('span');
+        approvedTag.className = 'approved-tag';
+        approvedTag.textContent = 'Approved';
+        approvedTag.id = 'summary-approved-tag';
+        
+        // Remove previous tag if exists
+        const existingTag = document.getElementById('summary-approved-tag');
+        if (existingTag) {
+            existingTag.remove();
+        }
+        
+        // Add to summary title
+        const titleElement = summaryText.querySelector('strong');
+        titleElement.appendChild(approvedTag);
+        
+        // Disable edit and approve buttons
+        editSummaryButton.disabled = true;
+        approveSummaryButton.disabled = true;
+        
+        // Update UI based on approval status
+        updateTicketFormVisibility();
+    });
+    
+    // Cancel Summary Edit button
+    cancelSummaryEditButton.addEventListener('click', () => {
+        summaryEditContainer.classList.add('hidden');
+        summaryContainer.classList.remove('hidden');
+    });
+    
+    // Save Summary Edit button
+    saveSummaryEditButton.addEventListener('click', () => {
+        // Get edited values
+        const newTitle = summaryTitleEdit.value;
+        const newDescription = summaryDescriptionEdit.value;
+        
+        // Update display
+        const titleElement = summaryText.querySelector('strong');
+        titleElement.textContent = newTitle;
+        
+        const descriptionElement = summaryText.querySelector('p');
+        descriptionElement.textContent = newDescription;
+        
+        // Update stored data
+        summaryText.dataset.title = newTitle;
+        summaryText.dataset.description = newDescription;
+        
+        // Switch back to view mode
+        summaryEditContainer.classList.add('hidden');
+        summaryContainer.classList.remove('hidden');
+        
+        // Reset approved status
+        summaryApproved = false;
+        
+        // Re-enable approve button
+        approveSummaryButton.disabled = false;
+        
+        // Remove approved tag if exists
+        const existingTag = document.getElementById('summary-approved-tag');
+        if (existingTag) {
+            existingTag.remove();
+        }
+        
+        // Update UI based on approval status
+        updateTicketFormVisibility();
+    });
+    
     // Handle ticket submission
     ticketForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Ensure all items are approved before submission
+        if (!allDescriptionsApproved || !summaryApproved) {
+            alert('Please approve all descriptions and the summary before submitting a ticket.');
+            return;
+        }
         
         // Get values from form
         const technician = document.getElementById('technician-name').value;
