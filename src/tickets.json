@@ -1,0 +1,46 @@
+[
+  {
+    "id": "TKT-001",
+    "title": "Conveyor Belt Motor Failure",
+    "description": "The main drive motor for conveyor line B has failed. The motor is overheating and making grinding noises. Requires immediate replacement of the bearing assembly and possibly the motor itself.",
+    "technician": "John Smith",
+    "location": "Factory Floor - Line B",
+    "equipment_id": "CONV-B-001",
+    "status": "Open",
+    "created_at": "2025-03-08T10:30:00",
+    "additional_notes": "Motor was serviced last month but has been running at high load."
+  },
+  {
+    "id": "TKT-002",
+    "title": "Air Compressor Pressure Drop",
+    "description": "The primary air compressor is experiencing significant pressure drops during operation. The pressure gauge shows fluctuations between 80-95 PSI instead of maintaining a steady 120 PSI. The pressure regulator valve may need replacement.",
+    "technician": "Sarah Johnson",
+    "location": "Utility Room A",
+    "equipment_id": "COMP-AIR-002",
+    "status": "In Progress",
+    "created_at": "2025-03-09T09:15:00",
+    "additional_notes": "This is the second time this issue has occurred in the last month."
+  },
+  {
+    "id": "TKT-003",
+    "title": "Control Panel Display Malfunction",
+    "description": "The LCD display on the main control panel is showing intermittent failures. Screen flickers and sometimes goes completely blank for several minutes before coming back online. Affects the operator's ability to monitor critical systems.",
+    "technician": "Mike Wilson",
+    "location": "Control Room",
+    "equipment_id": "CTRL-PNL-005",
+    "status": "Open",
+    "created_at": "2025-03-09T14:45:00",
+    "additional_notes": "Temporary workaround is to use the backup display on panel B."
+  },
+  {
+    "id": "TKT-004",
+    "title": "2004 Honda Pilot Driver Seat Mounting Frame Damage",
+    "description": "The driver seat mounting frame and bracket of a 2004 Honda Pilot exhibit significant damage, including bent metal, visible cracks, and wear and tear. The frame's damage, where it mounts to the bracket, suggests excessive force or stress over time, potentially compromising the stability and safety of the seat. The bracket also shows signs of damage, with parts bent or broken off. These issues could affect the overall functionality and safety of the seat mechanism. Repair or replacement of the damaged frame and bracket components is likely necessary to restore proper operation and ensure safety.",
+    "technician": "Neel",
+    "location": "Client",
+    "equipment_id": "312323",
+    "status": "Open",
+    "created_at": "2025-03-10T14:05",
+    "additional_notes": "na"
+  }
+]

@@ -50,6 +50,74 @@ def generate_image_description(client: cohere.ClientV2, prompt: str, img_path: s
     return response.message.content[0].text
 
 
+def generate_issue_summary(client: cohere.ClientV2, image_descriptions: list) -> dict:
+    """
+    Generate a summary of technical issues based on multiple image descriptions
+    
+    Args:
+        client: Cohere client
+        image_descriptions: List of dictionaries with 'filename' and 'description' keys
+        
+    Returns:
+        A dictionary with title and description of the technical issue
+    """
+    # Create a formatted string of all image descriptions
+    descriptions_text = "\n\n".join([
+        f"Image: {item['filename']}\nDescription: {item['description']}" 
+        for item in image_descriptions
+    ])
+    
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": f"""I'm a field technician and I've taken multiple photos of faulty equipment. Based on these image descriptions, please provide a summary of the technical issue and what might need repair.
+
+Your response must be formatted exactly as follows:
+
+TITLE: [a brief, specific title of the issue in 5-8 words]
+
+DESCRIPTION: [a detailed description of the technical issue, what components are affected, and what might need repair]
+
+Just provide the TITLE and DESCRIPTION, nothing else.
+
+Here are the image descriptions:
+
+{descriptions_text}"""
+                }
+            ]
+        }
+    ]
+    
+    response = client.chat(
+        model="command-a-111b",
+        messages=messages,
+        temperature=0.7,
+    )
+    
+    # Parse the response to extract title and description
+    raw_text = response.message.content[0].text
+    
+    # Default values
+    title = "Equipment Issue Detected"
+    description = raw_text
+    
+    # Try to parse the formatted response
+    try:
+        if "TITLE:" in raw_text and "DESCRIPTION:" in raw_text:
+            parts = raw_text.split("DESCRIPTION:")
+            title_part = parts[0].strip()
+            title = title_part.replace("TITLE:", "").strip()
+            description = parts[1].strip()
+    except Exception:
+        # If parsing fails, use the entire text as description
+        pass
+    
+    return {"title": title, "description": description}
+
+
 def main():
     IMG_DIR = os.path.abspath("data")
     image_path = os.path.join(IMG_DIR, "answerable_correctness_violinplot.png")

@@ -1,7 +1,11 @@
 [project]
 name = "c4ai-aya-vision-testing"
 version = "0.1.0"
-description = "Add your description here"
+description = "Web app for testing C4AI Aya Vision model"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "cohere",
+    "flask",
+    "python-dotenv",
+]

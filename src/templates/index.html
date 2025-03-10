@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Technician Image Analysis Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Field Technician Image Analysis Tool</h1>
+        
+        <div class="upload-container" id="drop-area">
+            <p>Drag & drop images here or</p>
+            <input type="file" id="file-input" accept="image/*" multiple hidden>
+            <button id="select-button">Select Images</button>
+            <div id="preview-container">
+                <div id="preview-list"></div>
+                <button id="clear-images" class="hidden">Clear All</button>
+            </div>
+        </div>
+        
+        <div class="prompt-container">
+            <label for="prompt-input">Custom Prompt (optional):</label>
+            <textarea id="prompt-input" placeholder="Describe this image in detail"></textarea>
+        </div>
+        
+        <button id="analyze-button" class="disabled">Analyze Equipment Issue</button>
+        
+        <div id="result-container" class="hidden">
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Analyzing images...</p>
+            </div>
+            
+            <div id="descriptions-container" class="hidden">
+                <h2>Image Descriptions:</h2>
+                <div id="descriptions-list"></div>
+            </div>
+            
+            <div id="summary-container" class="hidden">
+                <h2>Issue Summary:</h2>
+                <div id="summary-text"></div>
+            </div>
+        </div>
+        
+        <div id="ticket-container" class="hidden">
+            <h2>Submit Ticket</h2>
+            <form id="ticket-form">
+                <div class="form-group">
+                    <label for="technician-name">Technician Name:</label>
+                    <input type="text" id="technician-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="equipment-id">Equipment ID:</label>
+                    <input type="text" id="equipment-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="additional-notes">Additional Notes:</label>
+                    <textarea id="additional-notes"></textarea>
+                </div>
+                <button type="submit" id="submit-ticket-button">Submit Ticket</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
